@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "vaccine.maps.jwt_expiration_time_ms",
+      "type": "java.lang.String",
+      "description": "Description for vaccine.maps.jwt_expiration_time_ms."
+    },
+    {
+      "name": "vaccine.maps.jwt_secret",
+      "type": "java.lang.String",
+      "description": "Description for vaccine.maps.jwt_secret."
+    }
+  ] }
