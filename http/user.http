@@ -1,0 +1,55 @@
+// Sign up
+
+POST {{host}}/api/user/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "nurudin",
+  "email": "nurudin@gmail.com",
+  "password": "nurudin123",
+  "dateOfBirth": 16000000
+}
+
+###
+
+// Sign in admin
+
+POST {{host}}/api/user/signin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "burhan@gmail.com",
+  "password": "burhan123"
+}
+
+###
+
+// Sign in user
+
+POST {{host}}/api/user/signin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "host@gmail.com",
+  "password": "host123"
+}
+
+###
+
+// Get by id
+
+GET {{host}}/api/user/4
+Accept: application/json
+Authorization: Bearer token
+
+###
+
+// Get authenticated user
+
+GET {{host}}/api/user
+Accept: application/json
+Authorization: Bearer token
+

@@ -1,0 +1,46 @@
+// Register
+
+POST {{host}}/api/participant
+Content-Type: application/json
+Accept: application/json
+
+{
+  "vaccinationId": 9,
+  "userId": 5
+}
+
+###
+
+// List
+
+GET {{host}}/api/participants
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{host_token}}
+
+###
+
+// Get by id
+
+GET {{host}}/api/participant/14
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{host_token}}
+
+###
+
+// Accept, reject
+
+PATCH {{host}}/api/participant/14/accept
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{host_token}}
+
+###
+
+// Cancel
+
+PATCH {{host}}/api/participant/15/cancel
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{user_token}}

@@ -2,16 +2,17 @@ package com.group3.vaccinemaps.security.jwt
 
 import com.group3.vaccinemaps.entity.User
 import com.group3.vaccinemaps.security.service.UserDetailsImpl
-import io.jsonwebtoken.*
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import java.nio.charset.StandardCharsets
-import java.security.SignatureException
 import java.util.*
-
+import javax.servlet.http.HttpServletRequest
 
 @Component
 class JwtUtils {
@@ -36,7 +37,6 @@ class JwtUtils {
     }
 
     fun generateJwtToken(user: User): String {
-
         return Jwts.builder()
             .claim("userId", user.id)
             .setSubject(user.email)
@@ -46,20 +46,16 @@ class JwtUtils {
             .compact()
     }
 
-    fun getEmailFromJwtToken(token: String?): String {
-        val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray(StandardCharsets.UTF_8))
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .body.subject
-    }
-
     fun validateJwtToken(authToken: String?): Jws<Claims> {
         return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(authToken)
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(JwtUtils::class.java)
+    fun parseJwt(request: HttpServletRequest): String? {
+        val headerAuth = request.getHeader("Authorization")
+
+        return when (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            true -> headerAuth.substring(7, headerAuth.length)
+            else -> null
+        }
     }
 }

@@ -15,6 +15,7 @@ import com.group3.vaccinemaps.repository.RoleRepository
 import com.group3.vaccinemaps.repository.UserRepository
 import com.group3.vaccinemaps.security.jwt.JwtUtils
 import com.group3.vaccinemaps.security.service.UserDetailsImpl
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
@@ -91,6 +92,12 @@ class UserService(
         val token = jwtUtils.generateJwtToken(user)
 
         return SignUpResponse(token, mapUserEntityToResponse(user))
+    }
+
+    fun getById(userId: Long): UserResponse {
+        val user = userRepository.findByIdOrNull(userId) ?: throw NotFoundException("User not found")
+
+        return mapUserEntityToResponse(user)
     }
 
     private fun mapUserEntityToResponse(user: User) = UserResponse(

@@ -1,12 +1,17 @@
 package com.group3.vaccinemaps.controller
 
-import com.group3.vaccinemaps.payload.Payload
+import com.group3.vaccinemaps.exception.BadRequestException
 import com.group3.vaccinemaps.payload.WebResponse
 import com.group3.vaccinemaps.payload.request.SignInRequest
 import com.group3.vaccinemaps.payload.request.SignUpRequest
+import com.group3.vaccinemaps.payload.response
 import com.group3.vaccinemaps.payload.response.SignInResponse
 import com.group3.vaccinemaps.payload.response.SignUpResponse
+import com.group3.vaccinemaps.payload.response.UserResponse
 import com.group3.vaccinemaps.services.UserService
+import com.group3.vaccinemaps.utils.user
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -21,7 +26,8 @@ class UserController(private val userService: UserService) {
     )
     fun signIn(@RequestBody req: SignInRequest): WebResponse<SignInResponse> {
         val res = userService.signIn(req)
-        return WebResponse.ok(Payload(200, "Ok", res))
+
+        return response(200, "Ok", res)
     }
 
     @PostMapping(
@@ -31,6 +37,41 @@ class UserController(private val userService: UserService) {
     )
     fun signup(@RequestBody req: SignUpRequest): WebResponse<SignUpResponse> {
         val res = userService.signUp(req)
-        return WebResponse.ok(Payload(201, "Created", res))
+
+        return response(201, "Created", res)
+    }
+
+    @GetMapping(
+        value = ["/user/{userId}"],
+        produces = ["application/json"],
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    fun getById(@PathVariable userId: String): WebResponse<UserResponse> {
+        val uId = userId.toLongOrNull() ?: throw BadRequestException("Invalid user id")
+        val res = userService.getById(uId)
+
+        return response(201, "Created", res)
+    }
+
+    @GetMapping(
+        value = ["/user"],
+        produces = ["application/json"]
+    )
+    @PreAuthorize("hasRole('USER')")
+    fun getAuthenticatedUser(authentication: Authentication): WebResponse<UserResponse> {
+        val user = authentication.user
+
+        return response(
+            200, "Ok", UserResponse(
+                user.id,
+                user.roles,
+                user.photo,
+                user.name,
+                user.email,
+                user.phoneNumber,
+                user.kk,
+                user.dateOfBirth.time
+            )
+        )
     }
 }

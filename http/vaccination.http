@@ -1,0 +1,30 @@
+// Sign up
+
+POST {{host}}/api/vaccination
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOjMsInN1YiI6Imhvc3RAZ21haWwuY29tIiwiaWF0IjoxNjM3MDEwNzk3LCJleHAiOjE2MzcwOTcxOTd9.XmmiRxVV2Ulu0YuJGNH2A3rj5IRmwJJ01QUfxxoIpY3IBDd4I6cvZVMwv7OAkGMHkcJWo6n1LidWOZXgwd4-SQ
+
+{
+  "title": "Vaksinasi hari kelima",
+  "startDate": 16000000,
+  "lastDate": 16000000,
+  "vaccine": "sinovac"
+}
+
+###
+
+// Get by id
+
+GET {{host}}/api/vaccination/12
+Content-Type: application/json
+Accept: application/json
+
+###
+
+// List
+
+GET {{host}}/api/vaccinations?page=0&size=10
+Content-Type: application/json
+Accept: application/json
+

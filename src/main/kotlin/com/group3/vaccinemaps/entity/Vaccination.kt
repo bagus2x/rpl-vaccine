@@ -3,9 +3,7 @@ package com.group3.vaccinemaps.entity
 import java.util.*
 import javax.persistence.*
 
-@Entity(
-    name = "Vaccination"
-)
+@Entity(name = "Vaccination")
 class Vaccination(
     @Id
     @GeneratedValue
@@ -16,6 +14,7 @@ class Vaccination(
 
     @Column(nullable = false)
     val vaccine: String,
+
     val description: String?,
 
     @Column(columnDefinition = "VARCHAR(512)")

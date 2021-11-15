@@ -1,11 +1,11 @@
 package com.group3.vaccinemaps.services
 
-import com.group3.vaccinemaps.entity.EParticipantStatus
+import com.group3.vaccinemaps.entity.EParticipantStatus.*
 import com.group3.vaccinemaps.entity.Participant
 import com.group3.vaccinemaps.exception.NotFoundException
 import com.group3.vaccinemaps.exception.UnprocessableException
 import com.group3.vaccinemaps.payload.Validation
-import com.group3.vaccinemaps.payload.request.CreateParticipantRequest
+import com.group3.vaccinemaps.payload.request.RegisterParticipantRequest
 import com.group3.vaccinemaps.payload.request.PaginationRequest
 import com.group3.vaccinemaps.payload.response.ParticipantResponse
 import com.group3.vaccinemaps.repository.ParticipantRepository
@@ -26,30 +26,30 @@ class ParticipantService(
     private val validation: Validation
 ) {
 
-    fun register(req: CreateParticipantRequest): ParticipantResponse {
+    fun register(req: RegisterParticipantRequest): ParticipantResponse {
         validation.validate(req)
 
-        var participant = participantRepository.findByUserIdAndVaccinationId(
-            req.userId!!,
-            req.vaccinationId!!
-        )
-        if (participant != null) throw UnprocessableException("Already registered. Current status is '${participant.status}'")
+        val participants = participantRepository.findTop20ByUserId(req.userId!!)
+        if (participants.size == 20) throw UnprocessableException("Maximum limit exceeded. Please contact admin")
 
-        val accepted = participantRepository.countByUserIdAndStatus(req.userId, EParticipantStatus.ACCEPTED)
-        if (accepted >= 2) throw UnprocessableException("Maximum limit of 'ACCEPTED status' has been exceeded")
+        var (accepted, waiting) = listOf(0, 0, 0, 0)
+        participants.forEach {
+            if (it.status == ACCEPTED) accepted++
+            if (it.status == WAITING) waiting++
+            if (it.vaccination.id == req.vaccinationId) throw UnprocessableException("User already registered")
+        }
 
-        val waiting = participantRepository.countByUserIdAndStatus(req.userId, EParticipantStatus.WAITING)
-        if (waiting >= 2) throw UnprocessableException("Maximum limit of 'WAITING status' has been exceeded")
-
-        val vcn = vaccinationRepository.findByIdOrNull(req.vaccinationId) ?: throw NotFoundException("Vaccination not found")
-        if (vcn.lastDate.time >= System.currentTimeMillis()) throw UnprocessableException("Registration closed")
+        if (accepted >= 2) throw UnprocessableException("User already registered")
+        if (waiting >= 2) throw UnprocessableException("Number of waiting status is $waiting")
+        if (accepted == 1 && waiting == 1) throw UnprocessableException("Number of accepted and rejected statuses are ${accepted + waiting}")
 
         val user = userRepository.findByIdOrNull(req.userId) ?: throw NotFoundException("User not found")
+        val vaccination = vaccinationRepository.findByIdOrNull(req.vaccinationId) ?: throw NotFoundException("User not found")
 
-        participant = Participant(
+        val participant = Participant(
             user = user,
-            vaccination = vcn,
-            status = EParticipantStatus.WAITING
+            vaccination = vaccination,
+            status = WAITING
         )
 
         participantRepository.save(participant)
@@ -76,15 +76,15 @@ class ParticipantService(
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapParticipantToResponse(item)); accumulator }
     }
 
-    fun listByUserId(userId: Long): List<ParticipantResponse> {
-        val participants = participantRepository.findByUserId(userId)
+    fun listByUserId(req: PaginationRequest, userId: Long): List<ParticipantResponse> {
+        val page = participantRepository.findAllByUserId(userId, PageRequest.of(req.page, req.size))
 
-        return participants.map { mapParticipantToResponse(it) }
+        return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapParticipantToResponse(item)); accumulator }
     }
 
     fun accept(participantId: Long): ParticipantResponse {
         val participant = participantRepository.findByIdOrNull(participantId) ?: throw NotFoundException("Participant not found")
-        participant.status = EParticipantStatus.ACCEPTED
+        participant.status = ACCEPTED
         participantRepository.save(participant)
 
         return mapParticipantToResponse(participant)
@@ -92,7 +92,7 @@ class ParticipantService(
 
     fun reject(participantId: Long): ParticipantResponse {
         val participant = participantRepository.findByIdOrNull(participantId) ?: throw NotFoundException("Participant not found")
-        participant.status = EParticipantStatus.REJECTED
+        participant.status = REJECTED
         participantRepository.save(participant)
 
         return mapParticipantToResponse(participant)
@@ -102,7 +102,7 @@ class ParticipantService(
         val participant = participantRepository.findByIdOrNull(participantId) ?: throw NotFoundException("Participant not found")
         if (participant.user.id != userId) throw AccessDeniedException("Access denied")
 
-        participant.status = EParticipantStatus.CANCELED
+        participant.status = CANCELED
         participantRepository.save(participant)
 
         return mapParticipantToResponse(participant)

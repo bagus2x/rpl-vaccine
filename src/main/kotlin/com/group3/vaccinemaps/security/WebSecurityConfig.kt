@@ -1,6 +1,5 @@
 package com.group3.vaccinemaps.security
 
-import com.group3.vaccinemaps.security.jwt.AuthEntryPointJwt
 import com.group3.vaccinemaps.security.jwt.AuthTokenFilter
 import com.group3.vaccinemaps.security.service.UserDetailServiceImpl
 import org.springframework.context.annotation.Bean
@@ -20,19 +19,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class WebSecurityConfig(
-    private val userDetailsService: UserDetailServiceImpl,
-    private val unauthorizedHandler: AuthEntryPointJwt
-) : WebSecurityConfigurerAdapter() {
+class WebSecurityConfig(private val userDetailsService: UserDetailServiceImpl) : WebSecurityConfigurerAdapter() {
 
     @Bean
     fun authenticationJwtTokenFilter(): AuthTokenFilter {
         return AuthTokenFilter()
     }
 
-    public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
+    override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
         authenticationManagerBuilder
-            .userDetailsService<UserDetailsService?>(userDetailsService)
+            .userDetailsService<UserDetailsService>(userDetailsService)
             .passwordEncoder(passwordEncoder())
     }
 

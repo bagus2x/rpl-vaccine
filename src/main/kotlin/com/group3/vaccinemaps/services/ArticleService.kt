@@ -4,7 +4,6 @@ import com.group3.vaccinemaps.entity.Article
 import com.group3.vaccinemaps.exception.NotFoundException
 import com.group3.vaccinemaps.payload.Validation
 import com.group3.vaccinemaps.payload.request.CreateArticleRequest
-import com.group3.vaccinemaps.payload.request.DeleteArticleRequest
 import com.group3.vaccinemaps.payload.request.PaginationRequest
 import com.group3.vaccinemaps.payload.response.ArticleResponse
 import com.group3.vaccinemaps.repository.ArticleRepository
@@ -50,8 +49,8 @@ class ArticleService(
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapArticleToResponse(item)); accumulator }
     }
 
-    fun delete(req: DeleteArticleRequest) {
-        val article = articleRepository.findByIdOrNull(req.articleId) ?: throw NotFoundException("Article not found")
+    fun delete(articleId: Long) {
+        val article = articleRepository.findByIdOrNull(articleId) ?: throw NotFoundException("Article not found")
 
         articleRepository.deleteById(article.id)
     }

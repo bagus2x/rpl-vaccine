@@ -8,8 +8,12 @@ import org.springframework.security.access.AccessDeniedException
 val Authentication.user: User
     get() {
         return try {
-            (this.principal as UserDetailsImpl).user
+            (principal as UserDetailsImpl).user
         } catch (e: Exception) {
             throw AccessDeniedException("Access denied")
         }
     }
+
+fun Authentication.hasRole(name: String): Boolean {
+    return user.roles.map { it.name.name }.contains("ROLE_$name")
+}
