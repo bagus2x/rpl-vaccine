@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin("*")
 class ParticipantController(private val participantService: ParticipantService) {
 
-    @PostMapping("/participant")
+    @PostMapping(
+        value = ["/participant"],
+        produces = ["application/json"],
+        consumes = ["application/json"]
+    )
     fun register(@RequestBody req: RegisterParticipantRequest): WebResponse<ParticipantResponse> {
         val res = participantService.register(req)
 
@@ -27,8 +31,7 @@ class ParticipantController(private val participantService: ParticipantService) 
 
     @GetMapping(
         value = ["/participant/{participantId}"],
-        produces = ["application/json"],
-        consumes = ["application/json"]
+        produces = ["application/json"]
     )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun getById(authentication: Authentication, @PathVariable participantId: String): WebResponse<ParticipantResponse> {
@@ -44,10 +47,9 @@ class ParticipantController(private val participantService: ParticipantService) 
 
     @GetMapping(
         value = ["/participants"],
-        produces = ["application/json"],
-        consumes = ["application/json"]
+        produces = ["application/json"]
     )
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     fun list(
         authentication: Authentication,
         @RequestParam(value = "page", defaultValue = "0") page: Int,

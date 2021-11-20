@@ -23,7 +23,7 @@ class User(
     @Column(columnDefinition = "VARCHAR(512)", nullable = true)
     val photo: String? = null,
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     val name: String,
 
     @Column(nullable = false, unique = true)

@@ -21,10 +21,10 @@ class Vaccination(
     val picture: String?,
 
     @Column(name = "start_date", nullable = false)
-    val startDate: Date = Date(),
+    val startDate: Date,
 
     @Column(name = "last_date", nullable = false)
-    val lastDate: Date = Date(),
+    val lastDate: Date,
 
     @Column(name = "created_at", nullable = false)
     val createdAt: Date = Date(),

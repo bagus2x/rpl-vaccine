@@ -46,6 +46,8 @@ class ParticipantService(
         val user = userRepository.findByIdOrNull(req.userId) ?: throw NotFoundException("User not found")
         val vaccination = vaccinationRepository.findByIdOrNull(req.vaccinationId) ?: throw NotFoundException("User not found")
 
+        if (vaccination.lastDate.time < System.currentTimeMillis()) throw UnprocessableException("Registration closed")
+
         val participant = Participant(
             user = user,
             vaccination = vaccination,

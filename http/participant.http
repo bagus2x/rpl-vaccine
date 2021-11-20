@@ -40,7 +40,7 @@ Authorization: Bearer {{host_token}}
 
 // Cancel
 
-PATCH {{host}}/api/participant/15/cancel
+PATCH {{host}}/api/participant/10/cancel
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{user_token}}
