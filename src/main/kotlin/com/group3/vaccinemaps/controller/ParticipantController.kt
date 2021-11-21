@@ -65,6 +65,24 @@ class ParticipantController(private val participantService: ParticipantService) 
         return response(200, "Ok", res)
     }
 
+    @GetMapping(
+        value = ["/participants/vaccination/{vaccinationId}"],
+        produces = ["application/json"]
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    fun listByVaccinationId(
+        authentication: Authentication,
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "size", defaultValue = "10") size: Int,
+        @PathVariable vaccinationId: String
+    ): WebResponse<List<ParticipantResponse>> {
+        val req = PaginationRequest(page, size)
+        val vId = vaccinationId.toLongOrNull() ?: throw BadRequestException("Invalid vaccination id")
+        val res = participantService.listByVaccinationId(req, vId)
+
+        return response(200, "Ok", res)
+    }
+
     @PatchMapping(
         value = ["/participant/{participantId}/accept"],
         produces = ["application/json"],

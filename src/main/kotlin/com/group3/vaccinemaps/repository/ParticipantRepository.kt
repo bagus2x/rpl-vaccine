@@ -16,6 +16,8 @@ interface ParticipantRepository : JpaRepository<Participant, Long> {
 
     fun findAllByUserId(userId: Long, page: Pageable): Page<Participant>
 
+    fun findAllByVaccinationId(vaccinationId: Long, page: Pageable): List<Participant>
+
     fun findTop20ByUserId(userId: Long): List<Participant>
 
     fun countByUserIdAndStatus(userId: Long, status: EParticipantStatus): Int

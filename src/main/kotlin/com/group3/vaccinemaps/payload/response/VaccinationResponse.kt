@@ -8,6 +8,7 @@ data class VaccinationResponse(
     val picture: String?,
     val startDate: Long,
     val lastDate: Long,
+    val numberOfParticipants: Int,
     val createdAt: Long,
     val updatedAt: Long
 )

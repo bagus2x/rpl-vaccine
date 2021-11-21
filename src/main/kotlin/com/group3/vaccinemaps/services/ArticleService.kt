@@ -44,7 +44,7 @@ class ArticleService(
     }
 
     fun list(req: PaginationRequest): List<ArticleResponse> {
-        val page = articleRepository.findAll(PageRequest.of(req.page, req.size))
+        val page = articleRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(req.page, req.size))
 
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapArticleToResponse(item)); accumulator }
     }

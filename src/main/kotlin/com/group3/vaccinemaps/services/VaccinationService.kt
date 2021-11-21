@@ -41,7 +41,7 @@ class VaccinationService(val vaccinationRepository: VaccinationRepository, val v
     }
 
     fun list(req: PaginationRequest): List<VaccinationResponse> {
-        val page = vaccinationRepository.findAll(PageRequest.of(req.page, req.size))
+        val page = vaccinationRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(req.page, req.size))
 
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapVaccinationToResponse(item)); accumulator }
     }
@@ -52,15 +52,20 @@ class VaccinationService(val vaccinationRepository: VaccinationRepository, val v
         vaccinationRepository.deleteById(vcn.id)
     }
 
-    private fun mapVaccinationToResponse(vaccination: Vaccination) = VaccinationResponse(
-        vaccination.id,
-        vaccination.title,
-        vaccination.vaccine,
-        vaccination.description,
-        vaccination.picture,
-        vaccination.startDate.time,
-        vaccination.lastDate.time,
-        vaccination.createdAt.time,
-        vaccination.updatedAt.time
-    )
+    private fun mapVaccinationToResponse(vaccination: Vaccination): VaccinationResponse {
+        val numberOfParticipants = vaccination.participants.size
+
+        return VaccinationResponse(
+            vaccination.id,
+            vaccination.title,
+            vaccination.vaccine,
+            vaccination.description,
+            vaccination.picture,
+            vaccination.startDate.time,
+            vaccination.lastDate.time,
+            numberOfParticipants,
+            vaccination.createdAt.time,
+            vaccination.updatedAt.time
+        )
+    }
 }

@@ -84,6 +84,12 @@ class ParticipantService(
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapParticipantToResponse(item)); accumulator }
     }
 
+    fun listByVaccinationId(req: PaginationRequest, vaccinationId: Long): List<ParticipantResponse> {
+        val page = participantRepository.findAllByVaccinationId(vaccinationId, PageRequest.of(req.page, req.size))
+
+        return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapParticipantToResponse(item)); accumulator }
+    }
+
     fun accept(participantId: Long): ParticipantResponse {
         val participant = participantRepository.findByIdOrNull(participantId) ?: throw NotFoundException("Participant not found")
         participant.status = ACCEPTED
