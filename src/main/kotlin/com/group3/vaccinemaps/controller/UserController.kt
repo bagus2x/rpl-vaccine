@@ -70,6 +70,7 @@ class UserController(private val userService: UserService) {
                 user.email,
                 user.phoneNumber,
                 user.kk,
+                user.gender.name,
                 user.dateOfBirth.time
             )
         )

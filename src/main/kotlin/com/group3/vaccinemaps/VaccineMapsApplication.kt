@@ -25,6 +25,7 @@ class VaccineMapsApplication {
                     name = "Host",
                     email = "host@gmail.com",
                     password = "host123",
+                    gender = "FEMALE",
                     dateOfBirth = System.currentTimeMillis()
                 )
             )

@@ -35,6 +35,9 @@ class User(
     @Column(nullable = false)
     val password: String,
 
+    @Column(nullable = false)
+    val gender: EGender,
+
     @Column(nullable = true, unique = true, columnDefinition = "VARCHAR(512)")
     val kk: String? = null,
 

@@ -1,5 +1,6 @@
 package com.group3.vaccinemaps.services
 
+import com.group3.vaccinemaps.entity.EGender
 import com.group3.vaccinemaps.entity.ERole
 import com.group3.vaccinemaps.entity.User
 import com.group3.vaccinemaps.exception.BadRequestException
@@ -64,6 +65,11 @@ class UserService(
             name = req.name!!,
             email = req.email,
             password = passwordEncoder.encode(req.password),
+            gender = when (req.gender) {
+                EGender.FEMALE.name -> EGender.FEMALE
+                EGender.MALE.name -> EGender.MALE
+                else -> throw BadRequestException("Invalid gender")
+            },
             dateOfBirth = Date(req.dateOfBirth ?: 0)
         )
 
@@ -85,6 +91,11 @@ class UserService(
             name = req.name!!,
             email = req.email,
             password = passwordEncoder.encode(req.password),
+            gender = when (req.gender) {
+                EGender.FEMALE.name -> EGender.FEMALE
+                EGender.MALE.name -> EGender.MALE
+                else -> throw BadRequestException("Invalid gender")
+            },
             dateOfBirth = Date(req.dateOfBirth ?: 0)
         )
 
@@ -108,6 +119,7 @@ class UserService(
         user.email,
         user.phoneNumber,
         user.kk,
+        user.gender.name,
         user.dateOfBirth.time
     )
 }

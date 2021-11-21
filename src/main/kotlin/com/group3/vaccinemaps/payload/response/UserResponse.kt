@@ -11,5 +11,6 @@ data class UserResponse(
     val email: String,
     val phoneNumber: String? = null,
     val kk: String? = null,
+    val gender: String,
     val dateOfBirth: Long
 )
