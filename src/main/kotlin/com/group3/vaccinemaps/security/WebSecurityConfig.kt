@@ -46,7 +46,7 @@ class WebSecurityConfig(private val userDetailsService: UserDetailServiceImpl) :
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests().antMatchers("/api/**").permitAll()
+            .authorizeRequests().antMatchers("/api/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
             .anyRequest().authenticated()
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)

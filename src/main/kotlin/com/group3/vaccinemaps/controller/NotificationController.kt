@@ -55,4 +55,16 @@ class NotificationController(private val notificationService: NotificationServic
 
         return response(200, "Ok", res)
     }
+
+    @PatchMapping(
+        value = ["/participant/{notificationId}/see"],
+        produces = ["application/json"],
+    )
+    @PreAuthorize("hasRole('USER')")
+    fun see(authentication: Authentication, @PathVariable notificationId: String): WebResponse<NotificationResponse> {
+        val nId = notificationId.toLongOrNull() ?: throw BadRequestException("Invalid participant id")
+        val res = notificationService.see(nId, authentication.user.id)
+
+        return response(200, "Ok", res)
+    }
 }

@@ -24,7 +24,7 @@ class Notification(
     val content: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val status: ENotificationStatus,
+    var status: ENotificationStatus,
 
     @Column(name = "created_at", nullable = false)
     val createdAt: Date = Date()

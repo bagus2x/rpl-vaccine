@@ -6,7 +6,6 @@ import com.group3.vaccinemaps.exception.NotFoundException
 import com.group3.vaccinemaps.payload.Validation
 import com.group3.vaccinemaps.payload.request.CreateNotificationRequest
 import com.group3.vaccinemaps.payload.request.PaginationRequest
-import com.group3.vaccinemaps.payload.response.ArticleResponse
 import com.group3.vaccinemaps.payload.response.NotificationResponse
 import com.group3.vaccinemaps.repository.NotificationRepository
 import com.group3.vaccinemaps.repository.UserRepository
@@ -31,6 +30,7 @@ class NotificationService(
 ) {
     @Value("\${vaccine.maps.email}")
     private lateinit var email: String
+
     @Value("\${vaccine.maps.password}")
     private lateinit var password: String
 
@@ -43,6 +43,21 @@ class NotificationService(
         sendEmail(notification.receiver.email, req)
 
         return mapNotificationToResponse(notification)
+    }
+
+    private fun createNotification(req: CreateNotificationRequest): Notification {
+
+        val receiver = userRepository.findByIdOrNull(req.receiverId) ?: throw NotFoundException("User not found")
+        val notification = Notification(
+            picture = req.picture,
+            receiver = receiver,
+            title = req.title ?: "",
+            content = req.content ?: "",
+            status = ENotificationStatus.UNSEEN,
+            createdAt = Date()
+        )
+
+        return notificationRepository.save(notification)
     }
 
     private fun sendEmail(receiver: String, req: CreateNotificationRequest) {
@@ -83,19 +98,16 @@ class NotificationService(
         return page.fold(mutableListOf()) { accumulator, item -> accumulator.add(mapNotificationToResponse(item)); accumulator }
     }
 
-    private fun createNotification(req: CreateNotificationRequest): Notification {
+    fun see(notificationId: Long, receiverId: Long): NotificationResponse {
+        val notification = notificationRepository.findByIdOrNull(notificationId)
+            ?: throw NotFoundException("Notification not found")
+        if (notification.receiver.id != receiverId) throw NotFoundException("Notification not found")
 
-        val receiver = userRepository.findByIdOrNull(req.receiverId) ?: throw NotFoundException("User not found")
-        val notification = Notification(
-            picture = req.picture,
-            receiver = receiver,
-            title = req.title ?: "",
-            content = req.content ?: "",
-            status = ENotificationStatus.UNSEEN,
-            createdAt = Date()
-        )
+        notification.status = ENotificationStatus.SEEN
 
-        return notificationRepository.save(notification)
+        notificationRepository.save(notification)
+
+        return mapNotificationToResponse(notification)
     }
 
     private fun mapNotificationToResponse(notification: Notification) = NotificationResponse(
