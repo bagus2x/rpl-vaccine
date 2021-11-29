@@ -9,6 +9,7 @@ import com.group3.vaccinemaps.exception.NotFoundException
 import com.group3.vaccinemaps.payload.Validation
 import com.group3.vaccinemaps.payload.request.SignInRequest
 import com.group3.vaccinemaps.payload.request.SignUpRequest
+import com.group3.vaccinemaps.payload.request.UpdateKKRequest
 import com.group3.vaccinemaps.payload.response.SignInResponse
 import com.group3.vaccinemaps.payload.response.SignUpResponse
 import com.group3.vaccinemaps.payload.response.UserResponse
@@ -109,6 +110,16 @@ class UserService(
         val user = userRepository.findByIdOrNull(userId) ?: throw NotFoundException("User not found")
 
         return mapUserEntityToResponse(user)
+    }
+
+    fun updateKK(req: UpdateKKRequest): UserResponse  {
+        validation.validate(req)
+
+        val user = userRepository.findByIdOrNull(req.userId) ?: throw NotFoundException("User not found")
+        user.kk = req.kk
+        userRepository.save(user)
+
+        return  mapUserEntityToResponse(user)
     }
 
     private fun mapUserEntityToResponse(user: User) = UserResponse(

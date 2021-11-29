@@ -39,7 +39,7 @@ class User(
     val gender: EGender,
 
     @Column(nullable = true, unique = true, columnDefinition = "VARCHAR(512)")
-    val kk: String? = null,
+    var kk: String? = null,
 
     @Column(name = "date_of_birth", nullable = false)
     val dateOfBirth: Date,

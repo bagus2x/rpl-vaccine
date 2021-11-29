@@ -21,7 +21,6 @@ import javax.mail.Transport
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-
 @Service
 class NotificationService(
     private val notificationRepository: NotificationRepository,
